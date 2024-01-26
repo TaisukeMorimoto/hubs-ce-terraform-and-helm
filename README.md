@@ -31,14 +31,12 @@ Configure your DNS according to **[Step 1: Configuring your DNS on AWS's Route53
 
     1.  Execute the following commands in a terminal
         {environment}: AWS Environment Name （ex. develop）
-        `bash
-    aws s3api create-bucket --bucket ov-hubs-ce-tfstate-{environment} --region ap-northeast-1 --create-bucket-configuration LocationConstraint=ap-northeast-1
-    `
+        ```bash
+        aws s3api create-bucket --bucket ov-hubs-ce-tfstate-{environment} --region us-east-1
+        ```
 
-            <aside>
-            💡 Only when region is us-east-1, LocationConstraint is not specified because it is unnecessary.
-
-            </aside>
+        💡 Only when region is not us-east-1, specify  
+         `--create-bucket-configuration LocationConstraint={region}`
 
 2.  Create tfbackend file
 
@@ -57,10 +55,9 @@ Configure your DNS according to **[Step 1: Configuring your DNS on AWS's Route53
 
     4.  Enter and update values in the `{env_name}.tfvars` file, referring to the sample configuration file.
         The `ENV_NAME_TAG` should match the `{env_name}`.
-        <aside>
+
         💡 When adding environment variables, in addition to editing the `{env_name}.tfvars` file, it is necessary to define the variables in `variables.tf`
 
-            </aside>
 
 ## 3. Build environment on AWS
 
