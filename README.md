@@ -27,76 +27,74 @@ Configure your DNS according to **[Step 1: Configuring your DNS on AWS's Route53
 
 ## 2. Setup AWS Infrastructure
 
-1. Create S3 bucket for infrastructure state management files (tfstate)
-    1. Execute the following commands in a terminal
-    {environment}: AWS Environment Name （ex. develop）
-        
-        ```bash
-        aws s3api create-bucket --bucket ov-hubs-ce-tfstate-{environment} --region ap-northeast-1 --create-bucket-configuration LocationConstraint=ap-northeast-1
-        ```
-        
-        <aside>
-        💡 Only when region is us-east-1, LocationConstraint is not specified because it is unnecessary.
-        
-        </aside>
-        
-2. Create tfbackend file
-    1. Create `{env_name}.tfbackend`
-        
+1.  Create S3 bucket for infrastructure state management files (tfstate)
+
+    1.  Execute the following commands in a terminal
+        {environment}: AWS Environment Name （ex. develop）
+        `bash
+    aws s3api create-bucket --bucket ov-hubs-ce-tfstate-{environment} --region ap-northeast-1 --create-bucket-configuration LocationConstraint=ap-northeast-1
+    `
+
+            <aside>
+            💡 Only when region is us-east-1, LocationConstraint is not specified because it is unnecessary.
+
+            </aside>
+
+2.  Create tfbackend file
+
+    1.  Create `{env_name}.tfbackend`
+
         ```bash
         touch {env_name}.tfbackend
         ```
-        
-    2. Enter and update values in the `{env_name}.tfbackend` file, referring to the sample configuration file
-    3. Create`{env_name}.tfvars`
-        
+
+    2.  Enter and update values in the `{env_name}.tfbackend` file, referring to the sample configuration file
+    3.  Create`{env_name}.tfvars`
+
         ```bash
         touch {env_name}.tfvars
         ```
-        
-    4. Enter and update values in the `{env_name}.tfvars` file, referring to the sample configuration file.
-    The `ENV_NAME_TAG` should match the `{env_name}`.
-        
+
+    4.  Enter and update values in the `{env_name}.tfvars` file, referring to the sample configuration file.
+        The `ENV_NAME_TAG` should match the `{env_name}`.
         <aside>
         💡 When adding environment variables, in addition to editing the `{env_name}.tfvars` file, it is necessary to define the variables in `variables.tf`
-        
-        </aside>
-        
+
+            </aside>
 
 ## 3. Build environment on AWS
 
 1. Terraform Initialize
-    
-    ```bash
-    sh terraform.sh {env_name} init
-    ```
-    
+
+   ```bash
+   sh terraform.sh {env_name} init
+   ```
+
 2. Format
-    
-    ```bash
-    sh terraform.sh {env_name} fmt
-    ```
-    
+
+   ```bash
+   sh terraform.sh {env_name} fmt
+   ```
+
 3. Validation
-    
-    ```bash
-    sh terraform.sh {env_name} validate
-    ```
-    
+
+   ```bash
+   sh terraform.sh {env_name} validate
+   ```
+
 4. Build Environment
-    
-    ```bash
-    sh terraform.sh {env_name} apply
-    ```
-    
-    A list of resources to be created will be output. If there are no problems, enter "yes".
-    
-    When the process is completed, resources such as VPCs and EKSs whose definitions are created in the AWS environment.
-    
+
+   ```bash
+   sh terraform.sh {env_name} apply
+   ```
+
+   A list of resources to be created will be output. If there are no problems, enter "yes".
+
+   When the process is completed, resources such as VPCs and EKSs whose definitions are created in the AWS environment.
 
 ## 4. Configure SMTP on SES
 
-Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simple Email Service (SES)](https://hubs.mozilla.com/labs/community-edition-case-study-quick-start-on-gcp-w-aws-services/#:~:text=Step%202%3A%20Configuring%20your%20SMTP%20on%20AWS%27s%20Simple%20Email%20Service%20(SES))**
+Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simple Email Service (SES)](<https://hubs.mozilla.com/labs/community-edition-case-study-quick-start-on-gcp-w-aws-services/#:~:text=Step%202%3A%20Configuring%20your%20SMTP%20on%20AWS%27s%20Simple%20Email%20Service%20(SES)>)**
 
 ## 5. Setup Helm Chart
 
@@ -107,192 +105,141 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
 </aside>
 
 - Setup Helm
-    1. Create a namespace named hcce in the EKS cluster
-        
-        ```bash
-        kubectl create ns hcce
-        ```
-        
-    2. Create a namespace named security in the EKS cluster
-        
-        ```json
-        kubectl create ns security
-        ```
-        
-    3. Add the jetstack repository to helm and install cert-manager in the namespace security.
-        
-        ```json
-        helm repo add jetstack https://charts.jetstack.io
-        helm repo update
-        helm install cert-manager jetstack/cert-manager \
-        --namespace security \
-        --set ingressShim.defaultIssuerName=letsencrypt-issuer \
-        --set ingressShim.defaultIssuerKind=ClusterIssuer \
-        --set installCRDs=true
-        ```
-        
-    4. Create `{env_name}-cluster-issuer.yaml`
-        
-        ```bash
-        touch {env_name}-cluster-issuer.yaml
-        ```
-        
-    5. Update the email to the administrator's email address in  `{env_name}-cluster-issuer.yaml`
-        - 入力例
-            
-            ```bash
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            metadata:
-              name: letsencrypt-issuer
-            spec:
-              acme:
-                # You must replace this email address with your own.
-                # Let's Encrypt will use this to contact you about expiring
-                # certificates, and issues related to your account.
-                email: **'xxxxxxxxx@gmail.com'**
-                server: https://acme-v02.api.letsencrypt.org/directory
-                privateKeySecretRef:
-                  # Secret resource that will be used to store the account's private key.
-                  name: letsencrypt-issuer
-                # Add a single challenge solver, HTTP01 using nginx
-                solvers:
-                  - http01:
-                      ingress:
-                        class: haproxy
+
+  1.  Create a namespace named hcce in the EKS cluster
+
+      ```bash
+      kubectl create ns hcce
+      ```
+
+  2.  Create a namespace named security in the EKS cluster
+
+      ```json
+      kubectl create ns security
+      ```
+
+  3.  Add the jetstack repository to helm and install cert-manager in the namespace security.
+
+      ```json
+      helm repo add jetstack https://charts.jetstack.io
+      helm repo update
+      helm install cert-manager jetstack/cert-manager \
+      --namespace security \
+      --set ingressShim.defaultIssuerName=letsencrypt-issuer \
+      --set ingressShim.defaultIssuerKind=ClusterIssuer \
+      --set installCRDs=true
+      ```
+
+  4.  Create `{env_name}-cluster-issuer.yaml`
+
+      ```bash
+      touch {env_name}-cluster-issuer.yaml
+      ```
+
+  5.  Update the email to the administrator's email address in `{env_name}-cluster-issuer.yaml`
+  6.  Apply Issuer to EKS
+
+      ```json
+      kubectl apply -f '{env_name}-cluster-issuer.yaml'
+      ```
+
+  7.  Get the helm chart resources for hubs ce by git clone from the repository for Mozilla Hubs CE Chart
+
+      ```json
+      git clone https://github.com/hubs-community/mozilla-hubs-ce-chart.git
+      ```
+
+  8.  Copy the event file with the following command
+
+      ```json
+      cp mozilla-hubs-ce-chart/values.scale.yaml {env_name}-values-event.yaml
+      ```
+
+  9.  update `render_helm.sh` in `mozilla-hubs-ce-chart` folder
+
+      1.  put random strings in the following three variables in the `render_helm.sh` file.
+
+          ```json
+          NODE_COOKIE="node-{YOUR_NODE_COOKIE_ID}"
+          GUARDIAN_KEY="{YOUR_GUARDIAN_KEY}"
+          PHX_KEY="{YOUR_PHX_KEY}"
+          ```
+
+      2.  Update DB authentication information in `render_helm.sh` file
+
+          ```json
+          DB_USER="postgres"
+          DB_PASS="123456"
+          EXT_DB_HOST="pgsql"
+          ```
+
+          - `DB_USER`: DB_MASTER_USERNAME specified in `{env_name}.tfvars`
+          - `DB_PASS`: DB_MASTER_PASSWORD specified in `{env_name}.tfvars`
+          - `EXT_DB_HOST`: Value output when the following command is executed
             ```
-            
-    6. Apply Issuer to EKS
-        
-        ```json
-        kubectl apply -f '{env_name}-cluster-issuer.yaml'
-        ```
-        
-    7. Get the helm chart resources for hubs ce by git clone from the repository for Mozilla Hubs CE Chart
-        
-        ```json
-        git clone https://github.com/hubs-community/mozilla-hubs-ce-chart.git
-        ```
-        
-    8. Copy the event file with the following command
-        
-        ```json
-        cp mozilla-hubs-ce-chart/values.scale.yaml {env_name}-values-event.yaml
-        ```
-        
-    9. update `render_helm.sh` in `mozilla-hubs-ce-chart` folder
-        1. put random strings in the following three variables in the `render_helm.sh` file.
-            
-            ```json
-            NODE_COOKIE="node-{YOUR_NODE_COOKIE_ID}"
-            GUARDIAN_KEY="{YOUR_GUARDIAN_KEY}"
-            PHX_KEY="{YOUR_PHX_KEY}"
+            sh terraform.sh {env_name} output -raw rds_writer_endpoint
             ```
-            
-        2. Update DB authentication information in `render_helm.sh` file
-            
-            ```json
-            DB_USER="postgres"
-            DB_PASS="123456"
-            EXT_DB_HOST="pgsql"
-            ```
-            
-            - `DB_USER`: Identical to `DB_MASTER_USERNAME` specified in the `{env_name}.tfvars` file
-            - `DB_PASS`: Identical to `DB_MASTER_PASSWORD` specified in the `{env_name}.tfvars` `{env_name}.tfvars`
-            - `EXT_DB_HOST`: Value output when the following command is executed
-                
-                ```
-                sh terraform.sh {env_name} output -raw rds_writer_endpoint
-                ```
-                
-                <aside>
-                💡 The value of EXT_DB_HOST can also be checked from the RDS console.
-                
-                > Endpoint name of the created database endpoint whose type is Writer
-                > 
-                </aside>
-                
-        3. Update SMTP information in `render_helm.sh` file
-        Update the settings based on the information configured in "4. Configure SMTP on SES”
-            
-            ```
-            SMTP_SERVER="{YOUR_SMTP_SERVER}"
-            SMTP_PORT="587"
-            SMTP_USER="{YOUR_SMTP_USER}"
-            SMTP_PASS="{YOUR_SMTP_PASS}"
-            ```
-            
-            `SMTP_SERVER`: SMTP endpoint
-            
-            `SMTP_USER`: SMTP username as listed in the csv you downloaded your credentials (note that this is not an IAM user)
-            
-            `SMTP_PASS`: SMTP password from the csv downloaded with the SMTP credentials
-            
-    10. Run the edited `render_helm.sh`
+
+      3.  Update SMTP information in `render_helm.sh` file  
+          Update the settings based on the information configured in "4. Configure SMTP on SES”
+
+              SMTP_SERVER: SMTP endpoint
+              SMTP_USER: SMTP username as listed in the csv you downloaded your credentials (note that this is not an IAM user)
+              SMTP_PASS: SMTP password from the csv downloaded with the SMTP credentials
+
+  10. Run the edited `render_helm.sh`
+
+      ```shell
+      ./mozilla-hubs-ce-chart/render_helm.sh {domain} {mail_address}
+      ```
+
+  11. Check the contents of the generated . Check the contents of the `/config.yaml` file.
+  12. Update `configs > data` in the `{env_name}-values-event.yaml` file
+
+      1. In the `{env_name}-values-event.yaml` file, near line 118 replace the part below where it says `# Get the following from render_helm.sh`
+
+      <aside>
+      💡 If you have difficulty understanding the changes,
+        check out 
         
-        ```json
-        ./mozilla-hubs-ce-chart/render_helm.sh {domain} {mail_address}
-        ```
-        
-    11. Check the contents of the generated . Check the contents of the `/config.yaml` file.
-    12. `{env_name}-values-event.yaml`ファイル内の`configs > data`を更新する
-        1. Update `configs > data` in the `{env_name}-values-event.yaml` file
-        2. In the `{env_name}-values-event.yaml` file, near line 118# Replace the part below where it says `# Get the following from render_helm.sh`
-            
-            <aside>
-            💡 If you have difficulty understanding the changes, check out the hands on Youtube video below published by the hubs community.
-            17 minutes:around 35 seconds
-            
-            [https://www.youtube.com/watch?v=0VtKQYXTrn4&t=107s](https://www.youtube.com/watch?v=0VtKQYXTrn4&t=107s)
-            
-            </aside>
-            
-    13.  Update `defaultCert > data` in the `{env_name}-values-event.yaml` file
-        1. . Copy `tls.crt`, `tls.key` in the `/config.yaml` file.
-        2. Replace `tls.crt`, `tls.key` in `defaultCert > data` near line 165 in file `{env_name}-values-event.yaml`
-        3. Also, change enabled under defaultCert from `false` to `true`
-        
-        <aside>
-        💡 If you have difficulty understanding the changes, check out the hands on Youtube video below published by the hubs community.
+        [Deploying Community Edition on AWS with Alex Griggs' Helm Chart](https://www.youtube.com/watch?v=0VtKQYXTrn4&t=107s)  
         17 minutes:around 35 seconds
-        
-        [https://www.youtube.com/watch?v=0VtKQYXTrn4&t=107s](https://www.youtube.com/watch?v=0VtKQYXTrn4&t=107s)
-        
-        </aside>
-        
-    14. In the file `{env_name}-values-event.yaml`, replace the following value near line 6
-        1. `{YOUR_HUBS_DOMAIN}`: domai
-        2. `{ADMIN_EMAIL_ADDRESS}`: administrator's email address
-        
-        ```
-        global:
-          domain: &HUBS_DOMAIN "{YOUR_HUBS_DOMAIN}"
-          adminEmail: &ADMINEMAIL "{ADMIN_EMAIL_ADDRESS}"
-        ```
-        
-    15. Change certificate settings
-        1. `mozilla-hubs-ce-chart/charts/haproxy/templates/deployment.yaml`を開く。
-        2. Change line 39.
-            1. before
-                
-                ```json
-                - --default-ssl-certificate={{ .Release.Namespace }}/cert-**hcce**
-                ```
-                
-            2. after
-                
-                ```json
-                - --default-ssl-certificate={{ .Release.Namespace }}/cert-**{{ .Values.global.domain }}**
-                ```
-                
-            
-            <aside>
-            💡 Failure to follow this procedure will result in a warning to the user that the communication is not protected.
-            
-            </aside>
-            
+      </aside>
+
+  13. Update `defaultCert > data` in the `{env_name}-values-event.yaml` file
+  14. Copy `tls.crt`, `tls.key` in the `/config.yaml` file.
+  15. Replace `tls.crt`, `tls.key` in `defaultCert > data` near line 165 in file `{env_name}-values-event.yaml`
+  16. Also, change enabled under defaultCert from `false` to `true`
+  17. In the file `{env_name}-values-event.yaml`, replace the following value near line 6
+      ```
+      global:
+        domain: &HUBS_DOMAIN "{YOUR_HUBS_DOMAIN}"
+        adminEmail: &ADMINEMAIL "{ADMIN_EMAIL_ADDRESS}"
+      ```
+
+  18. Change certificate settings
+
+      1. Open `mozilla-hubs-ce-chart/charts/haproxy/templates/deployment.yaml`
+      2. Change near line 39.
+
+         1. before
+
+            ```json
+            - --default-ssl-certificate={{ .Release.Namespace }}/cert-**hcce**
+            ```
+
+         2. after
+
+            ```json
+            - --default-ssl-certificate={{ .Release.Namespace }}/cert-**{{ .Values.global.domain }}**
+            ```
+
+         <aside>
+         💡 Failure to follow this procedure will result in a warning to the user that the communication is not protected.
+
+         </aside>
+
 - EFS mount settings
-    
     <aside>
     💡 If you do not use efs, you can run the application without following the steps below, leaving enabled: false. However, in that case, assets such as scenes and logos will be deleted when the node (EC2 instance) of the EKS cluster is deleted.
     
@@ -317,48 +264,46 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
             
             ```yaml
             # Add
-            **pgsql:
-              enabled: false**
+            pgsql:
+              enabled: false
             ```
-            
 
 ## 6. Deploy Hubs CE
 
 1. helm install
-    
-    ```yaml
-    helm install moz -f {env_name}-values-event.yaml ./mozilla-hubs-ce-chart --namespace=hcce
-    ```
-    
+
+   ```bash
+   helm install moz -f {env_name}-values-event.yaml ./mozilla-hubs-ce-chart --namespace=hcce
+   ```
+
 2. Check the external IP of the resource to be created in EKS
-    
-    ```bash
-    kubectl get --namespace hcce svc -w haproxy-lb
-    ```
-    
+
+   ```bash
+   kubectl get --namespace hcce svc -w haproxy-lb
+   ```
+
 3. Update A record for the Hubs application in Route53
-    1. open the Route53 console
-    2. select "Host Zone" on the left side and select the domain you specified when deploying
-    3. update the values of the 4 A records created in "1. Configure DNS on Route53" as follows:
-        1. select the target A record and click "Edit Record" displayed in the upper right corner
-        2. update as follows and save
-            1. record type: A
-            2. alias: on
-            3. traffic routing destination: alias to Application Load Balancer and Classic Load Balancer
-            4. region: us-east-1
-            5. load balancer: dualstack.{external IP of EKS}
-        
-        Perform the above steps for all four A records ({domain}, assets.{domain}, cors.{domain}, stream.{domain})
-        
+
+   1. open the Route53 console
+   2. select "Host Zone" on the left side and select the domain you specified when deploying
+   3. update the values of the 4 A records created in "1. Configure DNS on Route53" as follows:
+
+      1. select the target A record and click "Edit Record" displayed in the upper right corner
+      2. update as follows and save
+         1. record type: A
+         2. alias: on
+         3. traffic routing destination: alias to Application Load Balancer and Classic Load Balancer
+         4. region: us-east-1
+         5. load balancer: dualstack.{external IP of EKS}
+
+      Perform the above steps for all four A records ({domain}, assets.{domain}, cors.{domain}, stream.{domain})
 
 ## 7. Check Hubs Application
 
 - Check the status of EKS Pod
-    
-    ```bash
-    kubectl get pods -n hcce
-    ```
-    
+  ```bash
+  kubectl get pods -n hcce
+  ```
     <aside>
     💡 If some pods do not become Running after 10 minutes or more, there may be a problem. Please check the information of each pod and debug it by referring to the following.
     
@@ -380,28 +325,21 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
         ```bash
         kubectl describe pod {pod_name} -n hcce
         ```
-        
 
-## 10. Confirmation of operation
+## 8. Confirmation of operation
 
 Confirm the following operations
 
 - Access to the domain
-    
-    After accessing the domain, the sign-in screen appears. Can sign in by entering the administrator's e-mail address
-    
+  After accessing the domain, the sign-in screen appears. Can sign in by entering the administrator's e-mail address
 - Can create a room
 - Can listen to other users' voices in the room
 
 # Troubleshooting
 
 - Certificate verification does not complete successfully and domain cannot be accessed
-    - → Temporarily turn off http → https redirects
-        
-        `/mozilla-hubs-ce-chart/charts/haproxy/values.yaml`ファイル内
-        
-        204行目のssl-redirectをtrueからfalseに変更する
-        
-        ```yaml
-        ssl-redirect: "false"  # true -> false
-        ```
+  - → Temporarily turn off http → https redirects
+    In the file `/mozilla-hubs-ce-chart/charts/haproxy/values.yaml`change ssl-redirect from true to false at line 204
+    ```yaml
+    ssl-redirect: "false" # true -> false
+    ```
