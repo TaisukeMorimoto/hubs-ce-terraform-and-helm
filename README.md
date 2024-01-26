@@ -2,6 +2,10 @@
 
 This repository manages the AWS resources needed to build the community version as code in terraform and deploys them using helm.
 
+By writing the AWS resources required for Hubs Community edition as IaC in terraform, resources can be built in one shot with terraform apply.
+
+This is useful for preventing simple mistakes in configuring manually in the AWS console and for deploying to multiple environments.
+
 This repository depends on [mozilla-hubs-ce-chart](https://github.com/hubs-community/mozilla-hubs-ce-chart).
 
 # My Local Environment
