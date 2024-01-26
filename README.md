@@ -115,13 +115,13 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
 
   2.  Create a namespace named security in the EKS cluster
 
-      ```json
+      ```
       kubectl create ns security
       ```
 
   3.  Add the jetstack repository to helm and install cert-manager in the namespace security.
 
-      ```json
+      ```bash
       helm repo add jetstack https://charts.jetstack.io
       helm repo update
       helm install cert-manager jetstack/cert-manager \
@@ -140,19 +140,19 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
   5.  Update the email to the administrator's email address in `{env_name}-cluster-issuer.yaml`
   6.  Apply Issuer to EKS
 
-      ```json
+      ```bash
       kubectl apply -f '{env_name}-cluster-issuer.yaml'
       ```
 
   7.  Get the helm chart resources for hubs ce by git clone from the repository for Mozilla Hubs CE Chart
 
-      ```json
+      ```bash
       git clone https://github.com/hubs-community/mozilla-hubs-ce-chart.git
       ```
 
   8.  Copy the event file with the following command
 
-      ```json
+      ```bash
       cp mozilla-hubs-ce-chart/values.scale.yaml {env_name}-values-event.yaml
       ```
 
@@ -225,13 +225,13 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
 
          1. before
 
-            ```json
+            ```bash
             - --default-ssl-certificate={{ .Release.Namespace }}/cert-**hcce**
             ```
 
          2. after
 
-            ```json
+            ```bash
             - --default-ssl-certificate={{ .Release.Namespace }}/cert-**{{ .Values.global.domain }}**
             ```
 
