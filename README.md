@@ -8,6 +8,14 @@ This is useful for preventing simple mistakes in configuring manually in the AWS
 
 This repository depends on [mozilla-hubs-ce-chart](https://github.com/hubs-community/mozilla-hubs-ce-chart).
 
+This repository is based on the following document.
+These documents may be updated.
+- [Hubs Community Edition Is Here!](https://hubs.mozilla.com/labs/welcoming-community-edition/)
+- [Deploying Mozilla Hubs CE on AWS with Ease: A Guide to the Scale Edition Helm Chart](https://hubs.mozilla.com/labs/deploying-mozilla-hubs-ce-on-aws-with-ease-a-guide-to-the-scale-edition-helm-chart/)
+- [Deploying Community Edition on AWS with Alex Griggs' Helm Chart](https://www.youtube.com/watch?v=0VtKQYXTrn4&t=122s)
+
+
+
 # My Local Environment
 
 - MacBook Pro
