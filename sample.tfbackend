@@ -1,0 +1,10 @@
+# -----------------------------------
+#   backend configs for sample
+# -----------------------------------
+
+bucket         = "hubs-ce-tfstate-sample"
+key            = "terraform.tfstate"
+encrypt        = true
+# profile        = "example-dev"
+region         = "us-east-1"
+# dynamodb_table = "terraform-state-lock"
