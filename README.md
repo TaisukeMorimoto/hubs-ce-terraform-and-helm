@@ -160,7 +160,7 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
 
       1.  put random strings in the following three variables in the `render_helm.sh` file.
 
-          ```json
+          ```bash
           NODE_COOKIE="node-{YOUR_NODE_COOKIE_ID}"
           GUARDIAN_KEY="{YOUR_GUARDIAN_KEY}"
           PHX_KEY="{YOUR_PHX_KEY}"
@@ -168,7 +168,7 @@ Configure your SMTP according to **[Step 2: Configuring your SMTP on AWS's Simpl
 
       2.  Update DB authentication information in `render_helm.sh` file
 
-          ```json
+          ```bash
           DB_USER="postgres"
           DB_PASS="123456"
           EXT_DB_HOST="pgsql"
